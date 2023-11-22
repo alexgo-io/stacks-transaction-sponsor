@@ -1,0 +1,23 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": ["javascript", "typescript"],
+  "editor.formatOnSave": true,
+  "eslint.format.enable": true,
+  "cSpell.words": [
+    "bytea",
+    "devenv",
+    "healthz",
+    "kriti",
+    "memoizee",
+    "microblock",
+    "mocknet",
+    "parens",
+    "secretkey",
+    "slonik",
+    "stxdx",
+    "txid",
+    "WPKH"
+  ]
+}

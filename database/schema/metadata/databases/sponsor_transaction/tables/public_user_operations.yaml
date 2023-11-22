@@ -1,0 +1,30 @@
+table:
+  name: user_operations
+  schema: public
+select_permissions:
+  - role: public
+    permission:
+      columns:
+        - id
+        - raw_tx
+        - sponsor_tx_id
+        - tx_id
+        - contract_address
+        - function_name
+        - sender
+        - sponsor
+        - status
+        - fee
+        - nonce
+        - sponsor_nonce
+        - submit_block_height
+        - args
+        - error
+        - created_at
+        - updated_at
+      filter:
+        _or:
+          - tx_id:
+              _is_null: false
+          - sender:
+              _is_null: false

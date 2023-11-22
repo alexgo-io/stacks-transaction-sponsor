@@ -1,0 +1,11 @@
+type Mutation {
+  execute(tx: String!): String
+}
+
+type Query {
+  isSwapServiceAvailable: SwapServiceStatus
+}
+
+type SwapServiceStatus {
+  status: String
+}

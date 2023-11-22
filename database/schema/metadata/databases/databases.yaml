@@ -1,0 +1,9 @@
+- name: sponsor_transaction
+  kind: postgres
+  configuration:
+    connection_info:
+      database_url:
+        from_env: SPONSOR_TRANSACTION_DATABASE_URL
+      isolation_level: read-committed
+      use_prepared_statements: false
+  tables: "!include sponsor_transaction/tables/tables.yaml"

@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -e
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+_docker_compose() {
+  pushd "$DIR/../database" >/dev/null 2>&1 || exit
+  docker-compose --project-name sponsor-transaction $@
+  popd >/dev/null 2>&1 || exit
+}
+
+main() {
+  local cmd=$1
+  case $cmd in
+    up)
+      _docker_compose up -d
+      echo -e "Local hasura console will be running at \e[32mhttp://127.0.0.1:${HASURA_PORT}/console\e[m"
+
+      echo '    with admin secret: '$HASURA_ADMIN_SECRET
+      echo "If you're starting from fresh, run:"
+      echo '    hasura metadata apply && hasura migrate apply --all-databases && hasura metadata reload'
+
+      if [[ $2 == '--no-init' ]]; then
+        echo "skip apply hasura migration"
+      else
+        echo -n "Waiting for hasura to be ready"
+        for _ in $(seq 1 999); do
+          echo -n .
+          if curl -so /dev/null http://127.0.0.1:${HASURA_PORT}/v1/version; then
+            echo
+            echo "Applying migrations..."
+            hasura metadata apply &&
+              hasura migrate apply --all-databases &&
+              hasura metadata reload
+            exit 0
+          fi
+          sleep 0.5
+        done
+        echo "Failed to connect to local hasura console"
+      fi
+      ;;
+    down)
+      _docker_compose down
+      ;;
+    logs)
+      _docker_compose logs -f --tail=100
+      ;;
+    clean)
+      _docker_compose down -v -t 0
+      ;;
+    reset)
+      _docker_compose down -v -t 0
+      main up -i
+      ;;
+    pull)
+      _docker_compose pull
+      ;;
+    *)
+      echo "Usage: $0 {up|down|logs|clean|reset|pull}"
+      exit 1
+      ;;
+  esac
+}
+
+main $@

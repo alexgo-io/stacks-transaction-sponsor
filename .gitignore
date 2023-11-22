@@ -1,0 +1,8 @@
+.DS_Store
+.idea/
+node_modules/
+dist/
+/bin/cli-hasura-*
+/database/schema/config.yaml
+/src/debug*.ts
+/.envrc.local

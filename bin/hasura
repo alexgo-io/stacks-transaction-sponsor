@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+export BINDIR="$( dirname "${BASH_SOURCE[0]}" )"
+cd $(dirname $BINDIR)/database/schema
+echo "version: 3
+endpoint: http://localhost:$HASURA_PORT
+admin_secret: $HASURA_ADMIN_SECRET
+metadata_directory: metadata
+" > config.yaml
+$BINDIR/hasura-cli $@

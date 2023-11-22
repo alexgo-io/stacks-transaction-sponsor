@@ -1,0 +1,3 @@
+table:
+  name: sponsor_records
+  schema: public
