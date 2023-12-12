@@ -18,7 +18,8 @@
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "types": ["node"]
+    "types": ["node"],
+    "plugins": [{ "name": "tsetse" }]
   },
   "exclude": ["node_modules", "dist"]
 }

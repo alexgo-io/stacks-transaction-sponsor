@@ -56,7 +56,7 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
     }
     const tx = deserializeTransaction(hexToBuffer(req.body.tx));
     try {
-      loadGasConfig(tx);
+      await loadGasConfig(tx);
     } catch (e) {
       if (e instanceof UnsupportedOperation) {
         respond(401, 'operation_not_supported', String(e));
