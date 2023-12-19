@@ -230,7 +230,7 @@
     base64-js "^1.5.1"
     jsontokens "^4.0.1"
 
-"@stacks/transactions@^6.10.0", "@stacks/transactions@^6.11.0":
+"@stacks/transactions@^6.11.0":
   version "6.11.0"
   resolved "https://registry.yarnpkg.com/@stacks/transactions/-/transactions-6.11.0.tgz#6b135cc77d6c60eeb2bfeef972df9da24caacb2a"
   integrity sha512-+zIDqn9j4H/+o1ER8C9rFpig1fyrQcj2hVGNIrp+YbpPyja+cxv3fPk6kI/gePzwggzxRgUkIWhBc+mZAXuXyQ==
@@ -918,10 +918,10 @@ chalk@^4.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-clarity-abi@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/clarity-abi/-/clarity-abi-0.0.9.tgz#1093342bcea4e4bcf001579ced681ba8ce7276a0"
-  integrity sha512-1qIUSanYJb5tGeaooQasnmJFSQbA8uCeqKYHvK+JP6arLHSNCI1/DCKfULqBKwONUZnugA6MABF+92nt5nQ8HQ==
+clarity-abi@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/clarity-abi/-/clarity-abi-0.0.10.tgz#76dc920664df4cd3acef5086064a2b44ef8875b5"
+  integrity sha512-h7r2/6CZc8BX3oABmq1T2j6GawNz4XnjR38a3Qi1/pY154VQA9/34mNfg8eKnX0isedzdi+5hxDr2fby1kmpuQ==
 
 cli-cursor@^4.0.0:
   version "4.0.0"
@@ -3329,14 +3329,14 @@ ts-api-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.0.3.tgz#f12c1c781d04427313dbac808f453f050e54a331"
   integrity sha512-wNMeqtMz5NtwpT/UZGY5alT+VoKdSsOOP/kqHFcUW1P/VRhH2wJ48+DN2WwUliNbQ976ETwDL0Ifd2VVvgonvg==
 
-ts-clarity@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/ts-clarity/-/ts-clarity-0.0.8.tgz#76ce06c4488037b4ba86ee0c129e1fce152bac03"
-  integrity sha512-5e6rbeXqvhcc/jpT/Co4XwhpmqSisrT+Z5wgRD+32WEbFNz3HGVPkUzQz672Ab2zS6o/KgENn4fYjbbAT/0Auw==
+ts-clarity@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/ts-clarity/-/ts-clarity-0.0.11.tgz#569c261f78caed90ec3b52242c89d5348f121d67"
+  integrity sha512-pb9SrpBfvQc9N5YyP5zasESsXllZJnJsQFZq+DVocKlLh86ngMNnxwbZG4MZBgJNkexNohxiOl6mpywLsrnNlA==
   dependencies:
     "@stacks/stacks-blockchain-api-types" "^7.3.6"
-    "@stacks/transactions" "^6.10.0"
-    clarity-abi "^0.0.9"
+    "@stacks/transactions" "^6.11.0"
+    clarity-abi "^0.0.10"
     cross-fetch "^4.0.0"
 
 ts-node@^10.9.2:
