@@ -1,7 +1,7 @@
 import { StacksMainnet, StacksMocknet } from '@stacks/network';
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
-import { getNonce } from '@stacks/transactions';
 import got from 'got-cjs';
+import { getAccountNonces } from 'ts-clarity';
 import { SponsorAccount } from './accounts';
 import {
   kDefaultGotRequestOptions,
@@ -89,7 +89,9 @@ export async function syncTransactionStatus(
   stacks_tip_height: number,
   account: SponsorAccount,
 ) {
-  const nonce = await getNonce(account.address, network);
+  const { last_executed_tx_nonce } = await getAccountNonces(account.address, {
+    stacksEndpoint: network.coreApiUrl,
+  });
   const pgPool = await getPgPool();
   const submittedTransactions = await pgPool.any(sql.typeAlias(
     'UserOperation',
@@ -149,11 +151,14 @@ export async function syncTransactionStatus(
             tx_info.tx_status
           }: ${JSON.stringify(tx_info.tx_result)}`,
         );
-      } else if (tx.sponsor_nonce < nonce) {
+      } else if (tx.sponsor_nonce <= last_executed_tx_nonce) {
         await syncRbfTransactionStatus(tx.tx_id);
       } else {
-        const user_nonce = await getNonce(tx.sender, network);
-        if (tx.nonce < user_nonce) {
+        const { last_executed_tx_nonce } = await getAccountNonces(tx.sender, {
+          stacksEndpoint: network.coreApiUrl,
+        });
+        const user_nonce = BigInt(last_executed_tx_nonce);
+        if (tx.nonce <= user_nonce) {
           // if none of the sponsored transactions settles, then it must be the user who RBFed it.
           await rbfWithNoop(
             network,

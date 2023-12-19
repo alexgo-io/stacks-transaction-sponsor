@@ -1,10 +1,10 @@
 import { StacksMainnet, StacksMocknet } from '@stacks/network';
 import {
   broadcastTransaction,
-  getNonce,
   makeSTXTokenTransfer,
 } from '@stacks/transactions';
 import got from 'got-cjs';
+import { getAccountNonces } from 'ts-clarity';
 import { getSponsorAccounts } from '../accounts';
 import { kStacksEndpoint, kStacksNetworkType } from '../config';
 import { stringify } from '../util';
@@ -35,7 +35,10 @@ async function main() {
     console.log(`Skip sending gas for mainnet`);
     return;
   }
-  let nonce = await getNonce(accounts[0].address, network);
+  const { possible_next_nonce } = await getAccountNonces(accounts[0].address, {
+    stacksEndpoint: network.coreApiUrl,
+  });
+  let nonce = BigInt(possible_next_nonce);
   for (let i = 1; i < accounts.length; i++) {
     if (balances[i] < 10) {
       console.log(

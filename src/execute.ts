@@ -8,10 +8,10 @@ import {
   addressToString,
   cvToString,
   deserializeTransaction,
-  getNonce,
 } from '@stacks/transactions';
 import assert from 'assert';
 import { RequestHandler } from 'express';
+import { getAccountNonces } from 'ts-clarity';
 import {
   kMaxTransactionsPerBlock,
   kSponsorWalletCount,
@@ -147,12 +147,14 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
       return;
     }
 
-    const onchainNonce = await getNonce(sender, network);
-    if (nonce !== onchainNonce) {
+    const { possible_next_nonce } = await getAccountNonces(sender, {
+      stacksEndpoint: network.coreApiUrl,
+    });
+    if (nonce !== BigInt(possible_next_nonce)) {
       respond(
         401,
         'invalid_nonce',
-        `Nonce ${nonce} not matching onchain nonce ${onchainNonce}`,
+        `Nonce ${nonce} not matching onchain nonce ${possible_next_nonce}`,
       );
       return;
     }

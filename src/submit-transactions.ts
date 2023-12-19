@@ -4,9 +4,9 @@ import {
   broadcastTransaction,
   deserializeTransaction,
   estimateContractFunctionCall,
-  getNonce,
   sponsorTransaction,
 } from '@stacks/transactions';
+import { getAccountNonces } from 'ts-clarity';
 import { SponsorAccount } from './accounts';
 import {
   kBaseFee,
@@ -40,7 +40,10 @@ export async function submitPendingTransactions(
       submitted: 0,
     };
   }
-  const onchain_next_nonce = await getNonce(account.address, network);
+  const { possible_next_nonce } = await getAccountNonces(account.address, {
+    stacksEndpoint: network.coreApiUrl,
+  });
+  const onchain_next_nonce = BigInt(possible_next_nonce);
   const last_submitted = await pgPool.maybeOne(sql.typeAlias(
     'UserOperation',
   )`SELECT * FROM user_operations
@@ -48,16 +51,17 @@ export async function submitPendingTransactions(
       ORDER BY sponsor_nonce DESC LIMIT 1`);
 
   const nonce =
-    last_submitted == null || last_submitted.sponsor_nonce == null
+    last_submitted == null ||
+    last_submitted.sponsor_nonce == null ||
+    onchain_next_nonce > last_submitted.sponsor_nonce
       ? onchain_next_nonce
-      : onchain_next_nonce > last_submitted.sponsor_nonce
-        ? onchain_next_nonce
-        : last_submitted.sponsor_nonce + 1n;
+      : last_submitted.sponsor_nonce + 1n;
 
-  if (pendingTransactions.length > 0)
+  if (pendingTransactions.length > 0) {
     console.log(
       `Working on ${pendingTransactions.length} pending operations with sponsor account ${account.address}`,
     );
+  }
   let submitted = 0;
   for (let i = 0; i < pendingTransactions.length; i++) {
     const tx = pendingTransactions[i];
