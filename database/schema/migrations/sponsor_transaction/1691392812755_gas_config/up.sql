@@ -34,21 +34,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'b20-bridge-endpoint-helper',
@@ -59,21 +45,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'b20-bridge-endpoint',
@@ -84,21 +56,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'stxdx-registry',
@@ -109,21 +67,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool-v1-1',
@@ -134,21 +78,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool-v1-1',
@@ -159,21 +89,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool-v1-1',
@@ -184,21 +100,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool-v1-1',
@@ -209,21 +111,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'swap-helper-bridged-v1-1',
@@ -234,21 +122,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'swap-helper-bridged-v1-1',
@@ -259,21 +133,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'swap-helper-v1-03',
@@ -284,21 +144,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool',
@@ -309,21 +155,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool',
@@ -334,21 +166,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool',
@@ -359,21 +177,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'amm-swap-pool',
@@ -384,21 +188,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool-v1-1',
@@ -409,21 +199,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool-v1-1',
@@ -434,21 +210,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool-v1-1',
@@ -459,21 +221,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool-v1-1',
@@ -484,21 +232,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-swap-helper',
@@ -509,21 +243,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-swap-helper',
@@ -534,21 +254,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-swap-helper',
@@ -559,21 +265,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-swap-helper',
@@ -584,21 +276,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-swap-helper',
@@ -609,21 +287,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool',
@@ -634,21 +298,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool',
@@ -659,21 +309,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool',
@@ -684,21 +320,7 @@ VALUES
     100000,
     NOW(),
     NOW()
-  );
-
-INSERT INTO
-  "public"."gas_config" (
-    "deployer_address",
-    "contract_name",
-    "function_name",
-    "estimate_gas",
-    "base_gas",
-    "increment_rate",
-    "gas_cap",
-    "created_at",
-    "updated_at"
-  )
-VALUES
+  ),
   (
     'ST1J2JTYXGRMZYNKE40GM87ZCACSPSSEEQVSNB7DC',
     'sponsored-amm-swap-pool',
