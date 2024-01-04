@@ -4,7 +4,7 @@ import express from 'express';
 import got from 'got-cjs';
 import memoizee from 'memoizee';
 import { getSponsorAccounts } from './accounts';
-import { kStacksEndpoint, kStacksNetworkType } from './config';
+import { getOptionalEnv, kStacksEndpoint, kStacksNetworkType } from './config';
 import { getPgPool, sql } from './db';
 import { executeSponsorTransaction } from './execute';
 import { startWorker, stopWorker } from './worker';
@@ -67,7 +67,7 @@ async function main() {
   });
   app.get('/status', async (_, res) => {
     res.json({
-      status: 'ok',
+      status: getOptionalEnv('SPONSOR_SERVICE_STATUS') ?? 'ok',
     });
   });
   const port = Number(process.env.STACKS_TRANSACTION_SPONSOR_PORT ?? 2980);
