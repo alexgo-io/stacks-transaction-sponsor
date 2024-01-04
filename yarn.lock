@@ -900,10 +900,10 @@ chalk@^4.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-clarity-abi@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/clarity-abi/-/clarity-abi-0.0.10.tgz#76dc920664df4cd3acef5086064a2b44ef8875b5"
-  integrity sha512-h7r2/6CZc8BX3oABmq1T2j6GawNz4XnjR38a3Qi1/pY154VQA9/34mNfg8eKnX0isedzdi+5hxDr2fby1kmpuQ==
+clarity-abi@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/clarity-abi/-/clarity-abi-0.0.16.tgz#ffcbe298dd817acc6837ccc78cd8f20d8210c149"
+  integrity sha512-cCE5gpTyNipfoCFwNJSs8vewAgsjPlQtT5hr0Jmf6o8myh20CRrU1Nt6imx0gjmY33WVPI0lfvcTJaqU8Hg1oQ==
 
 cli-cursor@^4.0.0:
   version "4.0.0"
@@ -3187,14 +3187,14 @@ ts-api-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.0.3.tgz#f12c1c781d04427313dbac808f453f050e54a331"
   integrity sha512-wNMeqtMz5NtwpT/UZGY5alT+VoKdSsOOP/kqHFcUW1P/VRhH2wJ48+DN2WwUliNbQ976ETwDL0Ifd2VVvgonvg==
 
-ts-clarity@^0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/ts-clarity/-/ts-clarity-0.0.11.tgz#569c261f78caed90ec3b52242c89d5348f121d67"
-  integrity sha512-pb9SrpBfvQc9N5YyP5zasESsXllZJnJsQFZq+DVocKlLh86ngMNnxwbZG4MZBgJNkexNohxiOl6mpywLsrnNlA==
+ts-clarity@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/ts-clarity/-/ts-clarity-0.0.15.tgz#cdbc1d32107d7ddc1b115430161ae977ca296d66"
+  integrity sha512-3QWRZcV1v7GJ+spUExSBcmf8+Nf65fpwW/mI8ssADXyRCdJZKkfj0AICzM5D1S8yq1mC0KP2z3O8HaK6OOKY6A==
   dependencies:
     "@stacks/stacks-blockchain-api-types" "^7.3.6"
     "@stacks/transactions" "^6.11.0"
-    clarity-abi "^0.0.10"
+    clarity-abi "^0.0.16"
     cross-fetch "^4.0.0"
 
 ts-node@^10.9.2:

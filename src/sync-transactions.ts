@@ -1,13 +1,7 @@
 import { StacksMainnet, StacksMocknet } from '@stacks/network';
-import { Transaction } from '@stacks/stacks-blockchain-api-types';
-import got from 'got-cjs';
-import { getAccountNonces } from 'ts-clarity';
+import { getAccountNonces, getTransaction } from 'ts-clarity';
 import { SponsorAccount } from './accounts';
-import {
-  kDefaultGotRequestOptions,
-  kFeeIncrement,
-  kStacksEndpoint,
-} from './config';
+import { kFeeIncrement, kStacksEndpoint } from './config';
 import { getPgPool, sql } from './db';
 import { rbfWithNoop } from './rbf-transactions';
 
@@ -29,15 +23,15 @@ async function syncRbfTransactionStatus(txId: Buffer) {
       continue;
     }
     try {
-      const tx_info = await got
-        .get(
-          `${kStacksEndpoint}/extended/v1/tx/0x${tx.sponsor_tx_id.toString(
-            'hex',
-          )}?unanchored=true`,
-          kDefaultGotRequestOptions,
-        )
-        .json<Transaction>();
-      if (tx_info.canonical === true && tx_info.microblock_canonical === true) {
+      const tx_info = await getTransaction(tx.sponsor_tx_id.toString('hex'), {
+        stacksEndpoint: kStacksEndpoint,
+      });
+      if (
+        tx_info != null &&
+        'canonical' in tx_info &&
+        tx_info.canonical === true &&
+        tx_info.microblock_canonical === true
+      ) {
         await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
             SET status = ${
               tx_info.tx_status === 'success' ? 'success' : 'failed'
@@ -114,15 +108,15 @@ export async function syncTransactionStatus(
       continue;
     }
     try {
-      const tx_info = await got
-        .get(
-          `${kStacksEndpoint}/extended/v1/tx/0x${tx.sponsor_tx_id.toString(
-            'hex',
-          )}?unanchored=true`,
-          kDefaultGotRequestOptions,
-        )
-        .json<Transaction>();
-      if (tx_info.canonical === true && tx_info.microblock_canonical === true) {
+      const tx_info = await getTransaction(tx.sponsor_tx_id.toString('hex'), {
+        stacksEndpoint: kStacksEndpoint,
+      });
+      if (
+        tx_info != null &&
+        'canonical' in tx_info &&
+        tx_info.canonical === true &&
+        tx_info.microblock_canonical === true
+      ) {
         await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
             SET status = ${
               tx_info.tx_status === 'success' ? 'success' : 'failed'
