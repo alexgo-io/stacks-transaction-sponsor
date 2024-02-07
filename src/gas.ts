@@ -12,11 +12,7 @@ export interface GasConfig {
   gasCap: bigint;
 }
 
-export class UnsupportedOperation extends Error {
-  constructor(msg: string) {
-    super(msg);
-  }
-}
+export class UnsupportedOperation extends Error {}
 
 export async function loadGasConfig(op: StacksTransaction): Promise<GasConfig> {
   const payload = op.payload;

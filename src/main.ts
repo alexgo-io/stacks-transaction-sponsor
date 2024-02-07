@@ -19,8 +19,8 @@ const isHealthy = memoizee(
         )`SELECT COUNT(*) as c FROM "public"."user_operations" WHERE status = 'pending'`,
       );
       return c >= 0n;
-    } catch (e: any) {
-      console.error(`Health check failed with error`, e);
+    } catch (e: unknown) {
+      console.error('Health check failed with error', e);
       return false;
     }
   },
@@ -39,7 +39,7 @@ async function printAccounts() {
   const balances = await Promise.all(
     accounts.map(async account => {
       const url = network.getAccountExtendedBalancesApiUrl(account.address);
-      return await got.get(url).json<any>();
+      return await got.get(url).json<{ stx: { balance: bigint } }>();
     }),
   );
   accounts.forEach((account, i) => {
@@ -87,12 +87,12 @@ async function main() {
   try {
     return await new Promise<void>(f => {
       process.once('SIGINT', () => {
-        console.log(`User interrupted.`);
+        console.log('User interrupted.');
         f();
       });
     });
   } finally {
-    console.log(`Closing server and stopping worker`);
+    console.log('Closing server and stopping worker');
     server.close();
     stopWorker();
   }

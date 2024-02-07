@@ -1,6 +1,6 @@
 import safeJsonStringify from 'safe-json-stringify';
 
-export type ReplacerFn = (key: any, value: any) => any;
+export type ReplacerFn = (key: unknown, value: unknown) => unknown;
 
 export function hexToBuffer(bytesLike: string) {
   return Buffer.from(
@@ -19,9 +19,9 @@ export function bigintReplacer(replacer?: ReplacerFn | null): ReplacerFn {
 }
 
 export function stringify(
-  obj: any,
+  obj: unknown,
   replacer?: ReplacerFn | null,
   indent?: number,
 ) {
-  return safeJsonStringify(obj, bigintReplacer(replacer), indent);
+  return safeJsonStringify(obj as object, bigintReplacer(replacer), indent);
 }

@@ -34,8 +34,9 @@ export function getSponsorAccounts(): SponsorAccount[] {
   let secretKey = kSponsorSecretKey;
   for (let i = 0; i < kSponsorAccountCount - 1; i++) {
     const sk = hashSha256Sync(Buffer.from(secretKey, 'hex'));
-    secretKey =
-      Buffer.from(sk, sk.byteOffset, sk.byteLength).toString('hex') + '01';
+    secretKey = `${Buffer.from(sk, sk.byteOffset, sk.byteLength).toString(
+      'hex',
+    )}01`;
     const address = getAddressFromPrivateKey(secretKey, transactionVersion);
     accounts.push({
       address,

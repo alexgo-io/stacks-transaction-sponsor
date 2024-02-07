@@ -4,7 +4,7 @@ import { getPgPool } from '../db';
 
 async function main() {
   if (kStacksNetworkType === 'mainnet') {
-    console.log(`This script is not for mainnet`);
+    console.log('This script is not for mainnet');
     return;
   }
   const pgPool = await getPgPool();

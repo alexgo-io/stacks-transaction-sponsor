@@ -46,8 +46,10 @@ export function startWorker() {
     while (running) {
       try {
         await runWorkerLoop();
-      } catch (e: any) {
-        console.error(`Worker loop failed with error: ${e.stack || e}`);
+      } catch (e: unknown) {
+        console.error(
+          `Worker loop failed with error: ${(e as Error).stack || e}`,
+        );
       }
       for (let i = 0; running && i < 100; i++) {
         await new Promise(f => setTimeout(f, 100));

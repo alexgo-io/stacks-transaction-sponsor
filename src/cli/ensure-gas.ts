@@ -18,7 +18,7 @@ async function main() {
   const balances = await Promise.all(
     accounts.map(async account => {
       const url = network.getAccountExtendedBalancesApiUrl(account.address);
-      const { stx } = await got.get(url).json<any>();
+      const { stx } = await got.get(url).json<{ stx: { balance: bigint } }>();
       return Number(stx.balance) / 1e6;
     }),
   );
@@ -32,7 +32,7 @@ async function main() {
   // Don't use this for mainnet, there will be nonce issue if we use the first account to send gas to the rest.
   // Use another account to send gas to these sponsor accounts
   if (kStacksNetworkType === 'mainnet') {
-    console.log(`Skip sending gas for mainnet`);
+    console.log('Skip sending gas for mainnet');
     return;
   }
   const { possible_next_nonce } = await getAccountNonces(accounts[0].address, {

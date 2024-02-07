@@ -61,9 +61,8 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
       if (e instanceof UnsupportedOperation) {
         respond(401, 'operation_not_supported', String(e));
         return;
-      } else {
-        throw e;
       }
+      throw e;
     }
     const contractCall = tx.payload;
     assert(
@@ -86,7 +85,7 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
 
     try {
       tx.verifyOrigin();
-    } catch (e: any) {
+    } catch (e) {
       respond(400, 'invalid_tx', `unable to verify tx: ${e}`);
       return;
     }
@@ -142,7 +141,7 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
       respond(
         429,
         'capacity_exceed',
-        `Platform sponsor transaction capacity exceeded, please retry until next block`,
+        'Platform sponsor transaction capacity exceeded, please retry until next block',
       );
       return;
     }
@@ -167,11 +166,9 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
         ${sql.binary(hexToBuffer(tx.txid()))},
         ${sql.binary(hexToBuffer(req.body.tx))},
         ${sender}, ${String(nonce)},
-        ${
-          addressToString(contractCall.contractAddress) +
-          '.' +
+        ${`${addressToString(contractCall.contractAddress)}.${
           contractCall.contractName.content
-        },
+        }`},
         ${contractCall.functionName.content},
         ${JSON.stringify(
           contractCall.functionArgs.map(arg => cvToString(arg)),
@@ -182,7 +179,7 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
         NOW()
       )`);
     respond(200, 'ok', null, tx.txid());
-  } catch (e: any) {
+  } catch (e) {
     respond(500, 'unknown_error', String(e));
   }
 };

@@ -6,7 +6,7 @@ export function bufferToHexPrefixString(buff: Buffer): string {
   if (buff.length === 0) {
     return '';
   }
-  return '\\x' + buff.toString('hex');
+  return `\\x${buff.toString('hex')}`;
 }
 
 export function hexToBuffer(hex: string): Buffer {

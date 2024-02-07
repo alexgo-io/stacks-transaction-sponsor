@@ -63,10 +63,10 @@ async function syncRbfTransactionStatus(txId: Buffer) {
         );
         return;
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(
         `Fail to update status for tx 0x${tx.sponsor_tx_id.toString('hex')}: ${
-          e.stack || e
+          (e as Error).stack || e
         }`,
       );
     }
@@ -167,10 +167,10 @@ export async function syncTransactionStatus(
               WHERE id = ${String(tx.id)}`);
         }
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(
         `Fail to update status for tx 0x${tx.sponsor_tx_id.toString('hex')}: ${
-          e.stack || e
+          (e as Error).stack || e
         }`,
       );
     }

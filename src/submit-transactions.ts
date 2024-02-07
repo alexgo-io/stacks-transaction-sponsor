@@ -87,7 +87,7 @@ export async function submitPendingTransactions(
     }
     try {
       user_tx.verifyOrigin();
-    } catch (e: any) {
+    } catch (e) {
       await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
         SET status = 'failed',
             error = ${String(e)},

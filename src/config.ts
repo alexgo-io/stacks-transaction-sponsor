@@ -10,9 +10,9 @@ export function getRequiredEnv(envKey: string) {
   return value;
 }
 
-export const kStacksNetworkType: 'mocknet' | 'mainnet' = getRequiredEnv(
-  'STACKS_NETWORK_TYPE',
-) as any;
+export const kStacksNetworkType = getRequiredEnv('STACKS_NETWORK_TYPE') as
+  | 'mocknet'
+  | 'mainnet';
 assert(
   kStacksNetworkType === 'mainnet' || kStacksNetworkType === 'mocknet',
   `Invalid STACKS_NETWORK_TYPE: ${kStacksNetworkType}`,
