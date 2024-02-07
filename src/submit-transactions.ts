@@ -27,7 +27,8 @@ export async function submitPendingTransactions(
   const submittedTransactions = await pgPool.any(sql.typeAlias(
     'UserOperation',
   )`SELECT * FROM user_operations
-      WHERE status = 'submitted' AND sponsor = ${account.address}`);
+      WHERE status = 'submitted' AND sponsor = ${account.address}
+      ORDER BY sponsor_nonce DESC`);
   const pendingTransactions = await pgPool.any(sql.typeAlias(
     'UserOperation',
   )`SELECT * FROM user_operations
@@ -44,11 +45,7 @@ export async function submitPendingTransactions(
     stacksEndpoint: network.coreApiUrl,
   });
   const onchain_next_nonce = BigInt(possible_next_nonce);
-  const last_submitted = await pgPool.maybeOne(sql.typeAlias(
-    'UserOperation',
-  )`SELECT * FROM user_operations
-      WHERE sponsor = ${account.address}
-      ORDER BY sponsor_nonce DESC LIMIT 1`);
+  const last_submitted = submittedTransactions[0];
 
   const nonce =
     last_submitted == null ||
