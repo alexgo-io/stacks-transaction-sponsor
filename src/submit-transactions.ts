@@ -4,7 +4,7 @@ import {
   TxRejectedReason,
   broadcastTransaction,
   deserializeTransaction,
-  estimateContractFunctionCall,
+  estimateTransactionFeeWithFallback,
   sponsorTransaction,
 } from '@stacks/transactions';
 import { getAccountNonces } from 'ts-clarity';
@@ -69,7 +69,7 @@ export async function submitPendingTransactions(
     let gas = kBaseFee;
     try {
       const gasConfig = await loadGasConfig(user_tx);
-      gas = await estimateContractFunctionCall(user_tx, network);
+      gas = BigInt(await estimateTransactionFeeWithFallback(user_tx, network));
       if (gas < gasConfig.baseGas) gas = gasConfig.baseGas;
       if (gas > gasConfig.gasCap) gas = gasConfig.gasCap;
     } catch (e) {
