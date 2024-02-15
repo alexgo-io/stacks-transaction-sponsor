@@ -1,6 +1,7 @@
 import { StacksMainnet, StacksMocknet } from '@stacks/network';
 import {
   AuthType,
+  TxRejectedReason,
   broadcastTransaction,
   deserializeTransaction,
   estimateContractFunctionCall,
@@ -170,6 +171,19 @@ export async function submitPendingTransactions(
         }, reason_data: ${stringify(rs.reason_data)}`,
       );
       console.error(stringify(rs, null, 2));
+      if (
+        rs.reason === TxRejectedReason.TooMuchChaining ||
+        rs.reason === TxRejectedReason.BadNonce ||
+        rs.reason === TxRejectedReason.NotEnoughFunds ||
+        rs.reason === TxRejectedReason.ConflictingNonceInMempool
+      ) {
+        await pgPool.query(sql.typeAlias('void')`
+          DELETE FROM "public"."sponsor_records"
+            WHERE tx_id = ${sql.binary(tx.tx_id)} AND sponsor_tx_id = ${sql.binary(
+              hexToBuffer(sponsored_tx.txid()),
+            )}`);
+        break;
+      }
       await pgPool.query(sql.typeAlias('void')`UPDATE "public"."sponsor_records"
           SET status = 'failed',
               error = ${rs.reason ?? 'N/A'},
