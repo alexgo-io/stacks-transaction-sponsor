@@ -79,8 +79,8 @@ export async function rbfIfNecessary(
       console.error(`Fail to load gas config for tx 0x${user_tx_id}`);
     }
     if (gas <= tx.fee) {
-      console.warn(`Skip RBF tx 0x${user_tx_id} because the gas reached cap`);
-      continue;
+      console.warn(`RBF tx 0x${user_tx_id} gas reached cap`);
+      gas = tx.fee + 10n;
     }
     const sponsored_tx = await sponsorTransaction({
       transaction: user_tx,
