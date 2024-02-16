@@ -146,9 +146,18 @@ export const executeSponsorTransaction: RequestHandler = async (req, res) => {
       return;
     }
 
-    const { possible_next_nonce } = await getAccountNonces(sender, {
-      stacksEndpoint: network.coreApiUrl,
-    });
+    const { possible_next_nonce, last_executed_tx_nonce } =
+      await getAccountNonces(sender, {
+        stacksEndpoint: network.coreApiUrl,
+      });
+    if (possible_next_nonce !== last_executed_tx_nonce + 1) {
+      respond(
+        401,
+        'pending_operation_exists',
+        'Account with pending transactions is not eligible for being sponsored',
+      );
+      return;
+    }
     if (nonce !== BigInt(possible_next_nonce)) {
       respond(
         401,
