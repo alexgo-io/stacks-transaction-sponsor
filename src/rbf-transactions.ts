@@ -15,7 +15,7 @@ import {
 } from './config';
 import { getPgPool, sql } from './db';
 import { loadGasConfig } from './gas';
-import { hexToBuffer, stringify } from './util';
+import { stringify } from './util';
 
 export async function rbfWithNoop(
   network: StacksMocknet | StacksMainnet,
@@ -97,14 +97,14 @@ export async function rbfIfNecessary(
       (
         ${sql.binary(tx.tx_id)},
         ${sql.binary(tx.raw_tx)},
-        ${tx.sender}, ${String(tx.nonce)},
+        ${tx.sender}, ${tx.nonce},
         ${tx.contract_address},
         ${tx.function_name},
         ${JSON.stringify(tx.args)},
-        ${String(gas)},
+        ${gas},
         ${account.address},
-        ${sql.binary(hexToBuffer(sponsored_tx.txid()))},
-        ${String(tx.sponsor_nonce)},
+        ${sql.hex(sponsored_tx.txid())},
+        ${tx.sponsor_nonce},
         ${stacks_tip_height},
         'pending',
         NOW(),
@@ -136,43 +136,66 @@ export async function rbfIfNecessary(
           'hex',
         )} fee ${tx.fee}, replaced by 0x${sponsored_tx.txid()} fee ${gas}`,
       );
-      await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
-          SET sponsor_tx_id = ${sql.binary(hexToBuffer(sponsored_tx.txid()))},
+      await pgPool.query(sql.typeAlias('void')`
+        UPDATE user_operations
+          SET sponsor_tx_id = ${sql.hex(sponsored_tx.txid())},
               submit_block_height = ${stacks_tip_height},
-              fee = ${String(gas)},
+              fee = ${gas},
               updated_at = NOW()
-          WHERE id = ${String(tx.id)}`);
-      await pgPool.query(sql.typeAlias('void')`UPDATE sponsor_records
+          WHERE id = ${tx.id}`);
+      await pgPool.query(sql.typeAlias('void')`
+        UPDATE sponsor_records
           SET status = 'submitted',
-              fee = ${String(gas)},
+              fee = ${gas},
               updated_at = NOW()
-          WHERE id = ${String(tx.id)}`);
+          WHERE tx_id = ${sql.val(tx.tx_id)}
+            AND sponsor_tx_id = ${sql.hex(sponsored_tx.txid())}`);
     } else {
       console.error(
         `Fail to broadcast tx ${rs.txid}, error: ${rs.error}, reason: ${
           rs.reason
         }, reason_data: ${stringify(rs.reason_data)}`,
       );
-      console.error(stringify(rs, null, 2));
-      if (rs.reason === TxRejectedReason.BadNonce) {
+      if (
+        rs.reason === TxRejectedReason.BadNonce ||
+        rs.reason === TxRejectedReason.ConflictingNonceInMempool
+      ) {
         // A previously submitted transaction settled, replacement rejected.
         // Leave it to next round to check during syncing transaction status.
+        await pgPool.query(sql.typeAlias('void')`
+          DELETE FROM sponsor_records
+            WHERE tx_id = ${sql.val(tx.tx_id)}
+              AND sponsor_tx_id = ${sql.hex(sponsored_tx.txid())}`);
         continue;
+      }
+      if (
+        rs.reason === TxRejectedReason.TooMuchChaining ||
+        rs.reason === TxRejectedReason.NotEnoughFunds
+      ) {
+        await pgPool.query(sql.typeAlias('void')`
+          DELETE FROM sponsor_records
+            WHERE tx_id = ${sql.val(tx.tx_id)}
+              AND sponsor_tx_id = ${sql.hex(sponsored_tx.txid())}`);
+        // rejected by external reasons, and also affect other tx, so we end current loop
+        break;
       }
       // if we're not able to submit the transaction, we need to replace the transaction with a noop and mark it as failed
       await rbfWithNoop(network, account, tx.sponsor_nonce, gas);
-      await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
-          SET sponsor_tx_id = ${sql.binary(hexToBuffer(sponsored_tx.txid()))},
-              fee = ${String(gas)},
+      await pgPool.query(sql.typeAlias('void')`
+        UPDATE user_operations
+          SET sponsor_tx_id = ${sql.hex(sponsored_tx.txid())},
+              fee = ${gas},
               status = 'failed',
               error = ${rs.reason ?? 'N/A'},
               updated_at = NOW()
-          WHERE id = ${String(tx.id)}`);
-      await pgPool.query(sql.typeAlias('void')`UPDATE sponsor_records
+          WHERE id = ${tx.id}`);
+      await pgPool.query(sql.typeAlias('void')`
+        UPDATE sponsor_records
           SET status = 'failed',
               error = ${rs.reason ?? 'N/A'},
               updated_at = NOW()
-          WHERE id = ${String(tx.id)}`);
+          WHERE tx_id = ${sql.val(tx.tx_id)}
+            AND sponsor_tx_id = ${sql.hex(sponsored_tx.txid())}`);
     }
   }
 }

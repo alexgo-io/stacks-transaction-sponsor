@@ -116,6 +116,13 @@ export const sql = Object.assign(sqlTag, {
     }
     throw new Error(`unsupported value: ${v}`);
   },
+  hex(v: string) {
+    let hex = v;
+    if (v.startsWith('\\x') || v.startsWith('0x')) {
+      hex = v.substring(2);
+    }
+    return sql.binary(Buffer.from(hex, 'hex'));
+  },
   toPrimitive(v: PrimitiveValueExpression | Date): PrimitiveValueExpression {
     if (v instanceof Date) {
       return v.toISOString();

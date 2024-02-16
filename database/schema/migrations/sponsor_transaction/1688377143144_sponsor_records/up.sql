@@ -20,4 +20,4 @@ CREATE TABLE "public"."sponsor_records" (
 
 CREATE INDEX "idx_sponsor_records_tx_id" ON "public"."sponsor_records" USING BTREE ("tx_id");
 
-CREATE INDEX "idx_sponsor_records_sponsor_nonce" ON "public"."sponsor_records" USING BTREE ("sponsor_nonce");
+CREATE INDEX "idx_sponsor_records_sponsor_nonce" ON "public"."sponsor_records" USING BTREE ("sponsor", "sponsor_nonce");
