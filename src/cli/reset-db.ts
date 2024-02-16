@@ -1,5 +1,5 @@
 import { sql } from 'slonik';
-import { kStacksNetworkType } from 'src/config';
+import { kStacksNetworkType } from '../config';
 import { getPgPool } from '../db';
 
 async function main() {
