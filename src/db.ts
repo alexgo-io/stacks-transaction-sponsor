@@ -7,7 +7,9 @@ import {
   createTimestampTypeParser,
   createTimestampWithTimeZoneTypeParser,
   DatabasePool,
+  PrimitiveValueExpression,
 } from 'slonik';
+import { fromUint8Array } from 'ts-clarity';
 import z from 'zod';
 import { getRequiredEnv } from './config';
 import {
@@ -84,7 +86,7 @@ export const GasConfig = z.object({
   updated_at: z.date(),
 });
 
-export const sql = createSqlTag({
+const sqlTag = createSqlTag({
   typeAliases: {
     id: z.object({
       id: z.bigint(),
@@ -95,5 +97,32 @@ export const sql = createSqlTag({
     void: z.object({}).strict(),
     UserOperation,
     GasConfig,
+  },
+});
+
+export const sql = Object.assign(sqlTag, {
+  val(v: Date | Uint8Array | bigint) {
+    if (typeof v === 'bigint') {
+      return v.toString();
+    }
+    if (v instanceof Date) {
+      return sqlTag.date(v);
+    }
+    if (Buffer.isBuffer(v)) {
+      return sqlTag.binary(v);
+    }
+    if (v instanceof Uint8Array) {
+      return sqlTag.binary(fromUint8Array(v));
+    }
+    throw new Error(`unsupported value: ${v}`);
+  },
+  toPrimitive(v: PrimitiveValueExpression | Date): PrimitiveValueExpression {
+    if (v instanceof Date) {
+      return v.toISOString();
+    }
+    return v;
+  },
+  get void() {
+    return sqlTag.typeAlias('void');
   },
 });
