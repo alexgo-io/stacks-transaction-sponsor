@@ -21,7 +21,7 @@ async function runWorkerLoop() {
     .json<CoreNodeInfoResponse>();
   const accounts = getSponsorAccounts();
   for (const account of accounts) {
-    await syncTransactionStatus(network, info.stacks_tip_height, account);
+    await syncTransactionStatus(network, account);
     await rbfIfNecessary(network, info.stacks_tip_height, account);
   }
   for (const account of accounts) {

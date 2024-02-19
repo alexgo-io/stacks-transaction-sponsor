@@ -7,6 +7,7 @@ import {
   estimateTransactionFeeWithFallback,
   sponsorTransaction,
 } from '@stacks/transactions';
+import assert from 'assert';
 import { getAccountNonces } from 'ts-clarity';
 import { SponsorAccount } from './accounts';
 import {
@@ -15,9 +16,9 @@ import {
   kStacksBroadcastEndpoints,
   kStacksNetworkType,
 } from './config';
-import { getPgPool, sql } from './db';
+import { SponsorRecord, UserOperation, getPgPool, sql } from './db';
 import { loadGasConfig } from './gas';
-import { hexToBuffer, stringify } from './util';
+import { stringify } from './util';
 
 export async function submitPendingTransactions(
   network: StacksMocknet | StacksMainnet,
@@ -25,17 +26,14 @@ export async function submitPendingTransactions(
   account: SponsorAccount,
 ) {
   const pgPool = await getPgPool();
-  const submittedTransactions = await pgPool.any(sql.typeAlias(
-    'UserOperation',
-  )`SELECT * FROM user_operations
+  const submittedTransactions = await pgPool.any(sql.type(UserOperation)`
+    SELECT * FROM user_operations
       WHERE status = 'submitted' AND sponsor = ${account.address}
       ORDER BY sponsor_nonce DESC`);
-  const pendingTransactions = await pgPool.any(sql.typeAlias(
-    'UserOperation',
-  )`SELECT * FROM user_operations
-      WHERE status = 'pending' ORDER BY id ASC LIMIT ${
-        kMaxTransactionsPerBlock - submittedTransactions.length
-      }`);
+  const pendingTransactions = await pgPool.any(sql.type(UserOperation)`
+    SELECT * FROM user_operations
+      WHERE status = 'pending' ORDER BY id ASC
+      LIMIT ${kMaxTransactionsPerBlock - submittedTransactions.length}`);
   if (submittedTransactions.length >= kMaxTransactionsPerBlock) {
     return {
       loaded: pendingTransactions.length,
@@ -46,12 +44,17 @@ export async function submitPendingTransactions(
     stacksEndpoint: network.coreApiUrl,
   });
   const onchain_next_nonce = BigInt(possible_next_nonce);
-  const last_submitted = submittedTransactions[0];
+  const last_submitted: UserOperation | null =
+    submittedTransactions[0] ??
+    (await pgPool.maybeOne(sql.type(UserOperation)`
+      SELECT * FROM user_operations
+        WHERE sponsor = ${account.address}
+          AND sponsor_nonce > 0
+        ORDER BY sponsor_nonce DESC LIMIT 1`));
+  assert(last_submitted == null || last_submitted.sponsor_nonce != null);
 
   const nonce =
-    last_submitted == null ||
-    last_submitted.sponsor_nonce == null ||
-    onchain_next_nonce > last_submitted.sponsor_nonce
+    last_submitted?.sponsor_nonce == null
       ? onchain_next_nonce
       : last_submitted.sponsor_nonce + 1n;
 
@@ -66,39 +69,68 @@ export async function submitPendingTransactions(
     const user_tx = deserializeTransaction(tx.raw_tx);
     const user_tx_id = user_tx.txid();
     const sponsorNonce = nonce + BigInt(submitted);
-    let gas = kBaseFee;
-    try {
-      const gasConfig = await loadGasConfig(user_tx);
-      gas = BigInt(await estimateTransactionFeeWithFallback(user_tx, network));
-      if (gas < gasConfig.baseGas) gas = gasConfig.baseGas;
-      if (gas > gasConfig.gasCap) gas = gasConfig.gasCap;
-    } catch (e) {
-      console.error(`Fail to load gas config for tx 0x${user_tx_id}`);
-    }
     if (user_tx.auth.authType !== AuthType.Sponsored) {
-      await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
-        SET status = 'failed',
-            error = 'not a sponsor transaction',
-            updated_at = NOW()
-        WHERE id = ${String(tx.id)}`);
+      await pgPool.query(sql.void`
+        UPDATE user_operations
+          SET status = 'failed',
+              error = 'not a sponsor transaction',
+              updated_at = NOW()
+        WHERE id = ${tx.id}`);
       continue;
     }
     try {
       user_tx.verifyOrigin();
     } catch (e) {
-      await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
-        SET status = 'failed',
-            error = ${String(e)},
-            updated_at = NOW()
-        WHERE id = ${String(tx.id)}`);
+      await pgPool.query(sql.void`
+        UPDATE user_operations
+          SET status = 'failed',
+              error = ${String(e)},
+              updated_at = NOW()
+          WHERE id = ${tx.id}`);
       continue;
+    }
+
+    const { last_executed_tx_nonce: user_last_executed_nonce } =
+      await getAccountNonces(tx.sender, {
+        stacksEndpoint: network.coreApiUrl,
+      });
+    if (tx.nonce <= BigInt(user_last_executed_nonce)) {
+      await pgPool.query(sql.void`
+        UPDATE user_operations
+          SET status = 'failed',
+              error = 'user nonce increased without any sponsored transaction settled',
+              sponsor_nonce = NULL,
+              updated_at = NOW()
+          WHERE id = ${tx.id}`);
+      continue;
+    }
+
+    let fee = kBaseFee;
+    try {
+      const gasConfig = await loadGasConfig(user_tx);
+      fee = BigInt(await estimateTransactionFeeWithFallback(user_tx, network));
+      if (fee < gasConfig.baseGas) fee = gasConfig.baseGas;
+      if (fee > gasConfig.gasCap) fee = gasConfig.gasCap;
+    } catch (e) {
+      console.error(`Fail to load gas config for tx 0x${user_tx_id}`);
+    }
+    if (sponsorNonce < BigInt(possible_next_nonce)) {
+      // current nonce is possibly replaced by a smaller nonce
+      const previous = await pgPool.maybeOne(sql.type(SponsorRecord)`
+        SELECT * FROM sponsor_records
+          WHERE sponsor = ${account.address}
+            AND sponsor_nonce = ${sponsorNonce}
+          ORDER BY fee DESC LIMIT 1`);
+      if (previous != null && previous.fee > fee) {
+        fee = previous.fee + 1n;
+      }
     }
     console.log(`Submitting user tx 0x${user_tx_id}...`);
     const sponsored_tx = await sponsorTransaction({
       transaction: user_tx,
       sponsorPrivateKey: account.secretKey,
       network,
-      fee: gas,
+      fee,
       sponsorNonce,
     });
     // Record first in case of unknown error
@@ -109,14 +141,14 @@ export async function submitPendingTransactions(
       (
         ${sql.binary(tx.tx_id)},
         ${sql.binary(tx.raw_tx)},
-        ${tx.sender}, ${String(tx.nonce)},
+        ${tx.sender}, ${tx.nonce},
         ${tx.contract_address},
         ${tx.function_name},
         ${JSON.stringify(tx.args)},
-        ${String(gas)},
+        ${fee},
         ${account.address},
-        ${sql.binary(hexToBuffer(sponsored_tx.txid()))},
-        ${String(sponsorNonce)},
+        ${sql.hex(sponsored_tx.txid())},
+        ${sponsorNonce},
         ${stacks_tip_height},
         'pending',
         NOW(),
@@ -145,61 +177,53 @@ export async function submitPendingTransactions(
         );
       });
       console.log(
-        `Submitted user operation 0x${user_tx_id} with tx 0x${sponsored_tx.txid()} fee ${gas} nonce ${sponsorNonce}`,
+        `Submitted user operation 0x${user_tx_id} with tx 0x${sponsored_tx.txid()} fee ${fee} nonce ${sponsorNonce}`,
       );
-      await pgPool.query(sql.typeAlias('void')`UPDATE "public"."sponsor_records"
+      await pgPool.query(sql.void`
+        UPDATE "public"."sponsor_records"
           SET status = 'submitted',
               updated_at = NOW()
-          WHERE tx_id = ${sql.binary(
-            tx.tx_id,
-          )} AND sponsor_tx_id = ${sql.binary(
-            hexToBuffer(sponsored_tx.txid()),
-          )}`);
-      await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
+        WHERE tx_id = ${sql.binary(tx.tx_id)}
+          AND sponsor_tx_id = ${sql.hex(sponsored_tx.txid())}`);
+      await pgPool.query(sql.void`
+        UPDATE user_operations
           SET sponsor = ${account.address},
-              sponsor_tx_id = ${sql.binary(hexToBuffer(sponsored_tx.txid()))},
-              sponsor_nonce = ${String(sponsorNonce)},
+              sponsor_tx_id = ${sql.hex(sponsored_tx.txid())},
+              sponsor_nonce = ${sponsorNonce},
               submit_block_height = ${stacks_tip_height},
-              fee = ${String(gas)},
+              fee = ${fee},
               status = 'submitted',
               updated_at = NOW()
-          WHERE id = ${String(tx.id)}`);
+        WHERE id = ${tx.id}`);
     } else {
       console.error(
         `Fail to broadcast tx ${rs.txid}, error: ${rs.error}, reason: ${
           rs.reason
-        }, reason_data: ${stringify(rs.reason_data)}`,
+        }, reason_data: ${stringify(rs)}`,
       );
-      console.error(stringify(rs, null, 2));
+      await pgPool.query(sql.void`
+        DELETE FROM "public"."sponsor_records"
+        WHERE tx_id = ${sql.binary(tx.tx_id)}
+          AND sponsor_tx_id = ${sql.hex(sponsored_tx.txid())}`);
       if (
         rs.reason === TxRejectedReason.TooMuchChaining ||
         rs.reason === TxRejectedReason.BadNonce ||
         rs.reason === TxRejectedReason.NotEnoughFunds ||
-        rs.reason === TxRejectedReason.ConflictingNonceInMempool
+        rs.reason === TxRejectedReason.ConflictingNonceInMempool ||
+        rs.reason === TxRejectedReason.ServerFailureDatabase ||
+        rs.reason === TxRejectedReason.ServerFailureOther ||
+        rs.reason === TxRejectedReason.EstimatorError
       ) {
-        await pgPool.query(sql.typeAlias('void')`
-          DELETE FROM "public"."sponsor_records"
-            WHERE tx_id = ${sql.binary(tx.tx_id)} AND sponsor_tx_id = ${sql.binary(
-              hexToBuffer(sponsored_tx.txid()),
-            )}`);
+        // Rejected by external reasons, retry later.
         break;
       }
-      await pgPool.query(sql.typeAlias('void')`UPDATE "public"."sponsor_records"
-          SET status = 'failed',
-              error = ${rs.reason ?? 'N/A'},
-              updated_at = NOW()
-          WHERE tx_id = ${sql.binary(
-            tx.tx_id,
-          )} AND sponsor_tx_id = ${sql.binary(
-            hexToBuffer(sponsored_tx.txid()),
-          )}`);
-      await pgPool.query(sql.typeAlias('void')`UPDATE user_operations
+      await pgPool.query(sql.void`UPDATE user_operations
         SET submit_block_height = ${stacks_tip_height},
-            fee = ${String(gas)},
+            fee = ${fee},
             status = 'failed',
             error = ${rs.reason ?? 'N/A'},
             updated_at = NOW()
-        WHERE id = ${String(tx.id)}`);
+        WHERE id = ${tx.id}`);
     }
   }
   return {
