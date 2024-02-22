@@ -307,14 +307,14 @@ export async function rbfIfNecessary(
         )} fee ${tx.fee}, replaced by 0x${sponsored_tx.txid()} fee ${gas}`,
       );
       await pgPool.transaction(async client => {
-        await client.query(sql.typeAlias('void')`
+        await client.query(sql.void`
           UPDATE user_operations
             SET sponsor_tx_id = ${sql.hex(sponsored_tx.txid())},
                 submit_block_height = ${stacks_tip_height},
                 fee = ${gas},
                 updated_at = NOW()
             WHERE id = ${tx.id}`);
-        await client.query(sql.typeAlias('void')`
+        await client.query(sql.void`
           UPDATE sponsor_records
             SET status = 'submitted',
                 fee = ${gas},
@@ -328,7 +328,7 @@ export async function rbfIfNecessary(
           rs.reason
         }, reason_data: ${stringify(rs.reason_data)}`,
       );
-      await pgPool.query(sql.typeAlias('void')`
+      await pgPool.query(sql.void`
         DELETE FROM sponsor_records
           WHERE tx_id = ${sql.val(tx.tx_id)}
             AND sponsor_tx_id = ${sql.hex(sponsored_tx.txid())}`);
