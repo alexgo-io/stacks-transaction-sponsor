@@ -71,7 +71,7 @@ export async function syncTransactionStatus(
               tx_info.tx_status === 'success' ? 'success' : 'failed';
             const error =
               status === 'success' ? null : stringify(tx_info.tx_result);
-            await client.query(sql.typeAlias('void')`
+            await client.query(sql.void`
               UPDATE user_operations
                 SET status = 'failed',
                     error = 'dropped',
@@ -80,7 +80,7 @@ export async function syncTransactionStatus(
                 AND sponsor_nonce = ${nonce}
                 AND status = 'submitted'
                 AND tx_id != ${sql.binary(tx.tx_id)}`);
-            await client.query(sql.typeAlias('void')`
+            await client.query(sql.void`
               UPDATE sponsor_records
                 SET status = 'failed',
                     error = 'dropped',
@@ -89,16 +89,18 @@ export async function syncTransactionStatus(
                 AND sponsor_nonce = ${nonce}
                 AND status = 'submitted'
                 AND id != ${tx.id}`);
-            await client.query(sql.typeAlias('void')`
+            await client.query(sql.void`
               UPDATE user_operations
                 SET status = ${status},
+                    sponsor_tx_id = ${sql.binary(tx.tx_id)},
+                    fee = ${tx.fee},
                     error = ${error},
                     updated_at = NOW()
               WHERE sponsor = ${account.address}
                 AND sponsor_nonce = ${nonce}
                 AND status = 'submitted'
                 AND tx_id = ${sql.binary(tx.tx_id)}`);
-            await client.query(sql.typeAlias('void')`
+            await client.query(sql.void`
               UPDATE sponsor_records
                 SET status = ${status},
                     error = ${error},
@@ -124,7 +126,7 @@ export async function syncTransactionStatus(
     }
     if (!settled) {
       await pgPool.transaction(async client => {
-        await client.query(sql.typeAlias('void')`
+        await client.query(sql.void`
           UPDATE sponsor_records
             SET status = 'failed',
                 error = 'dropped',
@@ -133,7 +135,7 @@ export async function syncTransactionStatus(
             AND sponsor_nonce = ${nonce}
             AND status = 'submitted'`);
         for (const tx_id of tx_ids) {
-          await client.query(sql.typeAlias('void')`
+          await client.query(sql.void`
             UPDATE user_operations
               SET status = 'failed',
                   error = 'dropped',
