@@ -1,10 +1,15 @@
-import { TypeParser } from 'slonik';
+import type { TypeParser } from 'slonik';
 
 const bigintParser = (value: string) => {
   return BigInt(value);
 };
 
-// SELECT oid, typarray, typname FROM pg_type
+export const createInt2TypeParser = (): TypeParser => {
+  return {
+    name: 'int2',
+    parse: bigintParser,
+  };
+};
 
 export const createInt4TypeParser = (): TypeParser => {
   return {

@@ -72,23 +72,23 @@ async function main() {
           AND "sponsor_nonce" = ${nonce}
           AND "status" = 'submitted'`);
     if (currentOperation != null && !currentOperation.tx_id.equals(tx_id)) {
-      await client.query(sql.typeAlias('void')`
+      await client.query(sql.void`
         UPDATE "sponsor_records"
           SET "status" = 'failed',
               "error" = 'dropped by another operation'
           WHERE "tx_id" = ${sql.binary(currentOperation.tx_id)}`);
-      await client.query(sql.typeAlias('void')`
+      await client.query(sql.void`
         UPDATE "user_operations"
           SET "status" = 'failed',
               "error" = 'dropped by another operation'
           WHERE "id" = ${currentOperation.id}`);
     }
-    await client.query(sql.typeAlias('void')`
+    await client.query(sql.void`
       UPDATE "sponsor_records"
         SET "status" = 'failed',
             "error" = 'dropped and processed with another nonce'
         WHERE "tx_id" = ${sql.binary(replacer.tx_id)}`);
-    await client.query(sql.typeAlias('void')`
+    await client.query(sql.void`
       UPDATE "user_operations"
         SET "sponsor" = ${sponsorAccount},
             "sponsor_nonce" = ${nonce}
@@ -135,14 +135,14 @@ async function main() {
     console.log(
       `Submitted user tx 0x${user_tx_id} by 0x${sponsored_tx.txid()}`,
     );
-    await pgPool.query(sql.typeAlias('void')`
+    await pgPool.query(sql.void`
       UPDATE user_operations
         SET sponsor_tx_id = ${sql.binary(Buffer.from(sponsored_tx.txid(), 'hex'))},
             submit_block_height = ${nodeInfo.stacks_tip_height},
             fee = ${gas},
             updated_at = NOW()
         WHERE id = ${replacer.id}`);
-    await pgPool.query(sql.typeAlias('void')`
+    await pgPool.query(sql.void`
       UPDATE sponsor_records
         SET status = 'submitted',
             fee = ${gas},
@@ -155,7 +155,7 @@ async function main() {
         rs.reason
       }, reason_data: ${stringify(rs, null, 2)}`,
     );
-    await pgPool.query(sql.typeAlias('void')`
+    await pgPool.query(sql.void`
       UPDATE user_operations
         SET sponsor_tx_id = ${sql.binary(Buffer.from(sponsored_tx.txid(), 'hex'))},
             fee = ${gas},
@@ -163,7 +163,7 @@ async function main() {
             error = ${rs.reason ?? 'N/A'},
             updated_at = NOW()
         WHERE id = ${replacer.id}`);
-    await pgPool.query(sql.typeAlias('void')`
+    await pgPool.query(sql.void`
       DELETE FROM "sponsor_records"
         WHERE tx_id = ${sql.binary(replacer.tx_id)}
           AND sponsor_tx_id = ${sql.binary(Buffer.from(sponsored_tx.txid(), 'hex'))}`);
