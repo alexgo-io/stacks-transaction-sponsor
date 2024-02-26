@@ -1,7 +1,6 @@
 import { StacksMainnet, StacksMocknet } from '@stacks/network';
 import { getAccountNonces, getTransaction } from 'ts-clarity';
 import { SponsorAccount } from './accounts';
-import { kStacksEndpoint } from './config';
 import { SponsorRecord, getPgPool, sql } from './db';
 import { stringify } from './util';
 
@@ -56,9 +55,9 @@ export async function syncTransactionStatus(
     for (const tx of txs) {
       tx_ids.add(tx.tx_id.toString('hex'));
       try {
-        const sponsor_tx_id = tx.sponsor_tx_id;
+        const { sponsor_tx_id } = tx;
         const tx_info = await getTransaction(sponsor_tx_id.toString('hex'), {
-          stacksEndpoint: kStacksEndpoint,
+          stacksEndpoint: network.coreApiUrl,
         });
         if (
           tx_info != null &&
@@ -92,7 +91,7 @@ export async function syncTransactionStatus(
             await client.query(sql.void`
               UPDATE user_operations
                 SET status = ${status},
-                    sponsor_tx_id = ${sql.binary(tx.tx_id)},
+                    sponsor_tx_id = ${sql.binary(sponsor_tx_id)},
                     fee = ${tx.fee},
                     error = ${error},
                     updated_at = NOW()
@@ -121,7 +120,7 @@ export async function syncTransactionStatus(
             (e as Error).stack || e
           }`,
         );
-        return;
+        throw e;
       }
     }
     if (!settled) {
