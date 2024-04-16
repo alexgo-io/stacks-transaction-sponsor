@@ -1,10 +1,9 @@
-import { StacksMainnet, StacksMocknet } from '@stacks/network';
 import cors from 'cors';
 import express from 'express';
-import got from 'got-cjs';
 import memoizee from 'memoizee';
+import { getAccountBalances } from 'ts-clarity';
 import { getSponsorAccounts } from './accounts';
-import { getOptionalEnv, kStacksEndpoint, kStacksNetworkType } from './config';
+import { getOptionalEnv, kStacksEndpoint } from './config';
 import { getPgPool, sql } from './db';
 import { executeSponsorTransaction } from './execute';
 import { startWorker, stopWorker } from './worker';
@@ -31,15 +30,12 @@ const isHealthy = memoizee(
 );
 
 async function printAccounts() {
-  const network =
-    kStacksNetworkType === 'mocknet'
-      ? new StacksMocknet({ url: kStacksEndpoint })
-      : new StacksMainnet({ url: kStacksEndpoint });
   const accounts = getSponsorAccounts();
   const balances = await Promise.all(
     accounts.map(async account => {
-      const url = network.getAccountExtendedBalancesApiUrl(account.address);
-      return await got.get(url).json<{ stx: { balance: bigint } }>();
+      return await getAccountBalances(account.address, {
+        stacksEndpoint: kStacksEndpoint,
+      });
     }),
   );
   accounts.forEach((account, i) => {

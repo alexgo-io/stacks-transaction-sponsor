@@ -1,12 +1,7 @@
 import { StacksMainnet, StacksMocknet } from '@stacks/network';
-import { CoreNodeInfoResponse } from '@stacks/stacks-blockchain-api-types';
-import got from 'got-cjs';
+import { getNodeInfo } from 'ts-clarity';
 import { getSponsorAccounts } from './accounts';
-import {
-  kDefaultGotRequestOptions,
-  kStacksEndpoint,
-  kStacksNetworkType,
-} from './config';
+import { kStacksEndpoint, kStacksNetworkType } from './config';
 import { rbfIfNecessary } from './rbf-transactions';
 import { submitPendingTransactions } from './submit-transactions';
 import { syncTransactionStatus } from './sync-transactions';
@@ -16,9 +11,7 @@ async function runWorkerLoop() {
     kStacksNetworkType === 'mocknet'
       ? new StacksMocknet({ url: kStacksEndpoint })
       : new StacksMainnet({ url: kStacksEndpoint });
-  const info = await got
-    .get(network.getInfoUrl(), kDefaultGotRequestOptions)
-    .json<CoreNodeInfoResponse>();
+  const info = await getNodeInfo({ stacksEndpoint: kStacksEndpoint });
   const accounts = getSponsorAccounts();
   for (const account of accounts) {
     await syncTransactionStatus(network, account);

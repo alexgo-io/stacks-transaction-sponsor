@@ -3,8 +3,7 @@ import {
   broadcastTransaction,
   makeSTXTokenTransfer,
 } from '@stacks/transactions';
-import got from 'got-cjs';
-import { getAccountNonces } from 'ts-clarity';
+import { getAccountBalances, getAccountNonces } from 'ts-clarity';
 import { getSponsorAccounts } from '../accounts';
 import { kStacksEndpoint, kStacksNetworkType } from '../config';
 import { stringify } from '../util';
@@ -17,8 +16,9 @@ async function main() {
   const accounts = getSponsorAccounts();
   const balances = await Promise.all(
     accounts.map(async account => {
-      const url = network.getAccountExtendedBalancesApiUrl(account.address);
-      const { stx } = await got.get(url).json<{ stx: { balance: bigint } }>();
+      const { stx } = await getAccountBalances(account.address, {
+        stacksEndpoint: kStacksEndpoint,
+      });
       return Number(stx.balance) / 1e6;
     }),
   );
