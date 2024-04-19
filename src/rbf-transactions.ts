@@ -6,9 +6,9 @@ import {
   estimateTransactionFeeWithFallback,
   sponsorTransaction,
 } from '@stacks/transactions';
-import assert from 'assert';
+import assert from 'node:assert';
 import { getAccountNonces } from 'ts-clarity';
-import { SponsorAccount } from './accounts';
+import type { SponsorAccount } from './accounts';
 import {
   kFeeIncrement,
   kStacksBroadcastEndpoints,

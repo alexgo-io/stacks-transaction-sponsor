@@ -1,4 +1,4 @@
-import { TypeParser } from 'slonik';
+import type { TypeParser } from 'slonik';
 
 const numericParser = (value: string) => {
   return BigInt(value.replace(/\.[0]*$/, ''));

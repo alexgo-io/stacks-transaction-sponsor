@@ -1,6 +1,6 @@
-import { StacksMainnet, StacksMocknet } from '@stacks/network';
+import type { StacksMainnet, StacksMocknet } from '@stacks/network';
 import { getAccountNonces, getTransaction } from 'ts-clarity';
-import { SponsorAccount } from './accounts';
+import type { SponsorAccount } from './accounts';
 import { SponsorRecord, getPgPool, sql } from './db';
 import { stringify } from './util';
 

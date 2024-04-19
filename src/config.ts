@@ -1,4 +1,4 @@
-import assert from 'assert';
+import assert from 'node:assert';
 
 export function getOptionalEnv(envKey: string) {
   return process.env[envKey];

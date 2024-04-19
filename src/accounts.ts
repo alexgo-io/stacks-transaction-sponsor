@@ -1,7 +1,7 @@
 import { TransactionVersion } from '@stacks/common';
 import { hashSha256Sync } from '@stacks/encryption';
 import { getAddressFromPrivateKey } from '@stacks/transactions';
-import assert from 'assert';
+import assert from 'node:assert';
 import {
   kSponsorAccountCount,
   kSponsorAddress,

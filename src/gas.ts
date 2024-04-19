@@ -1,8 +1,8 @@
 import {
   PayloadType,
   StacksMessageType,
-  StacksTransaction,
   addressToString,
+  type StacksTransaction,
 } from '@stacks/transactions';
 import { getPgPool, sql } from './db';
 

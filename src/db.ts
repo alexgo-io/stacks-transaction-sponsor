@@ -4,8 +4,8 @@ import {
   createNumericTypeParser,
   createPool,
   createSqlTag,
-  DatabasePool,
-  PrimitiveValueExpression,
+  type DatabasePool,
+  type PrimitiveValueExpression,
 } from 'slonik';
 import { fromUint8Array } from 'ts-clarity';
 import z from 'zod';

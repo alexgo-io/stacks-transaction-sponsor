@@ -9,8 +9,8 @@ import {
   cvToString,
   deserializeTransaction,
 } from '@stacks/transactions';
-import assert from 'assert';
-import { RequestHandler } from 'express';
+import type { RequestHandler } from 'express';
+import assert from 'node:assert';
 import { getAccountNonces } from 'ts-clarity';
 import {
   kMaxTransactionsPerBlock,

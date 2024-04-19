@@ -10,7 +10,6 @@ import {
   generateWallet,
   getStxAddress,
 } from '@stacks/wallet-sdk';
-import got from 'got-cjs';
 import { getRequiredEnv, kStacksEndpoint } from '../config';
 import { stringify } from '../util';
 
@@ -51,17 +50,19 @@ async function main() {
     tx_bytes.byteLength,
   );
 
-  const rs = await got
-    .post('https://sponsor-tx.alexgo.dev/v1/graphql', {
-      json: {
-        query: `mutation MyMutation {
+  const rs = await fetch('https://sponsor-tx.alexgo.dev/v1/graphql', {
+    method: 'POST',
+    body: JSON.stringify({
+      query: `mutation MyMutation {
         execute(tx: "${tx_buffer.toString('hex')}")
       }`,
-        variables: null,
-        operationName: 'MyMutation',
-      },
-    })
-    .json();
+      variables: null,
+      operationName: 'MyMutation',
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then(rs => rs.json());
   console.log(stringify(rs));
 }
 
