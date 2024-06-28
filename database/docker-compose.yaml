@@ -1,8 +1,7 @@
-version: '3'
 services:
   postgres:
     restart: always
-    image: postgres:15.6-alpine
+    image: postgres:15.7-alpine
     container_name: sponsor_pg
     shm_size: 1gb
     environment:
